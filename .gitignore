@@ -1,0 +1,5 @@
+node_modules
+tests
+index.js
+\assembly\index.ts
+*.json

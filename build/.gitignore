@@ -1,0 +1,5 @@
+*.png
+*.ppm
+*.js
+*.py
+index.wasm

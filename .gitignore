@@ -1,5 +1,7 @@
 node_modules
 tests
 index.js
+render_scenes.js
 \assembly\index.ts
 *.json
+/images/temp

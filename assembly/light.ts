@@ -1,9 +1,17 @@
-import { vec3, dot, subtract, unit_vector } from "./vec3";
-import { clamp } from "./utilities";
+import { vec3, dot, subtract, unit_vector, scale, distance } from "./vec3";
+import { clamp, infinity } from "./utilities";
 
 export abstract class light{
-    abstract get_position(): vec3;
+    //return position of the light source
+    //abstract get_position(): vec3;
+
+    //return color of the light source
     abstract get_color(): vec3;
+    //return unit vector from point to the light
+    abstract get_to_light(point: vec3): vec3;
+
+    //return distance from point to the light
+    abstract get_distance(point :vec3): f64;
     abstract get_attenuation(in_normal: vec3, in_position: vec3): f64;
 }
 
@@ -19,9 +27,17 @@ export class directional_light extends light {
         this.direction = unit_vector(_dir);
     }
 
-    get_position(): vec3{
-        return this.position;
+    get_to_light(point :vec3): vec3{
+        return scale(-1.0, this.direction);
     }
+
+    get_distance(point :vec3): f64{
+        return infinity;
+    }
+
+    /*get_position(): vec3{
+        return this.position;
+    }*/
 
     get_color(): vec3{
         return this.color;
@@ -42,9 +58,18 @@ export class point_light extends light {
         this.color = _color;
     }
 
-    get_position(): vec3{
-        return this.position;
+    get_to_light(point :vec3): vec3{
+        let v = new vec3(this.position.x() - point.x(), this.position.y() - point.y(), this.position.z() - point.z());
+        return unit_vector(v);
     }
+
+    get_distance(point :vec3): f64{
+        return distance(point, this.position);
+    }
+
+    /*get_position(): vec3{
+        return this.position;
+    }*/
 
     get_color(): vec3{
         return this.color;

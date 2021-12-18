@@ -130,12 +130,13 @@ export class diffuse_light extends material {
     }
 
     emitted(r_in: ray, rec: hit_record, u: f64, v: f64, p: vec3, branch_index: i32): vec3{
-        if(rec.front_face){
+        return this.emit.value(u, v, p);
+        /*if(rec.front_face){
             return this.emit.value(u, v, p);
         }
         else{
             return new vec3(0.0, 0.0, 0.0);
-        }
+        }*/
     }
 }
 

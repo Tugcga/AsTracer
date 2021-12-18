@@ -32,6 +32,13 @@ export function clamp(x: f64, min: f64, max: f64): f64{
 }
 
 @inline
+export function clamp_i32(x: i32, min: i32, max: i32): i32{
+    if(x < min){ return min; }
+    if(x > max){ return max; }
+    return x;
+}
+
+@inline
 export function random_int(min: i32, max: i32): i32 {
     return <i32>(random_double_range(<f32>min, <f32>(max + 1)));
 }

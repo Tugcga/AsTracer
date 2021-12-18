@@ -10,7 +10,7 @@ import { xy_rect, xz_rect, yz_rect } from "./aarect";
 import { box } from "./box";
 import { material, scatter_record, lambertian, metal, dielectric, simple_combined, diffuse_light } from "./material";
 import { ray } from "./ray";
-import { random_double, random_double_range, infinity, clamp, log_message, delta } from "./utilities";
+import { random_double, random_double_range, infinity, clamp, clamp_i32, log_message, delta } from "./utilities";
 import { hittable_pdf, mixture_pdf } from "./pdf";
 import { triangle, triangle_2d } from "./triangle";
 import { linear_to_srgb, value_linear_to_srgb } from "./color";
@@ -88,24 +88,12 @@ export class renderer{
         return this.m_bake_padding;
     }
 
-    set_aspect_ration(value: f64): void{
-        this.m_aspect_ratio = value;
-    }
-
     get_aspect_ratio(): f64{
         return this.m_aspect_ratio;
     }
 
-    set_fov(value: f64): void{
-        this.m_fov = value;
-    }
-
     get_fov(): f64{
         return this.m_fov;
-    }
-
-    set_aperture(value: f64): void{
-        this.m_aperture = value;
     }
 
     get_aperture(): f64{
@@ -113,11 +101,11 @@ export class renderer{
     }
 
     set_image_size(width: i32, height: i32): void{
-        this.m_image_width = width;
-        this.m_image_height = height;
+        this.m_image_width = width < 1 ? 1 : width;
+        this.m_image_height = height < 1 ? 1 : height;
 
         //update the camera
-        this.m_aspect_ratio = <f64>width / <f64>height;
+        this.m_aspect_ratio = <f64>this.m_image_width / <f64>this.m_image_height;
         this.m_camera = new camera(this.m_look_from, 
                                    this.m_look_to, 
                                    new vec3(0.0, 1.0, 0.0), 
@@ -134,28 +122,16 @@ export class renderer{
         return to_return
     }
 
-    set_from_point(x: f64, y: f64, z: f64): void{
-        this.m_look_from = new vec3(x, y, z);
-    }
-
-    set_to_point(x: f64, y: f64, z: f64): void{
-        this.m_look_to = new vec3(x, y, z);
-    }
-
-    set_camera_short(width: i32, height: i32, 
-                     from_x: f64, from_y: f64, from_z: f64,
+    set_camera_short(from_x: f64, from_y: f64, from_z: f64,
                      to_x: f64, to_y: f64, to_z: f64,
                      fov: f64 = 45.0, aperture: f64 = 0.0): void{
-        this.set_camera(width, height, from_x, from_y, from_z, to_x, to_y, to_z, fov, aperture);
+        this.set_camera(from_x, from_y, from_z, to_x, to_y, to_z, fov, aperture);
     }
 
-    set_camera(width: i32, height: i32, 
-               from_x: f64, from_y: f64, from_z: f64,
+    set_camera(from_x: f64, from_y: f64, from_z: f64,
                to_x: f64, to_y: f64, to_z: f64,
                fov: f64, aperture: f64): void{  // wasmer for Python, for example, can not use values by default, so, we should set all parameters
-        this.m_aspect_ratio = <f64>width / <f64>height;
-        this.m_image_width = width;
-        this.m_image_height = height;
+        this.m_aspect_ratio = <f64>this.m_image_width / <f64>this.m_image_height;
         this.m_look_from = new vec3(from_x, from_y, from_z);
         this.m_look_to = new vec3(to_x, to_y, to_z);
         this.m_fov = fov;
@@ -203,25 +179,41 @@ export class renderer{
         this.add_light(new directional_light(new vec3(r, g, b), new vec3(x, y, z), new vec3(dir_x, dir_y, dir_z)));
     }
 
-    add_sphere(center_x: f64, center_y: f64, center_z: f64, radius: f64, material: material): void{
-        this.m_objects.add(new sphere(new vec3(center_x, center_y, center_z), radius, material));
+    add_sphere(center_x: f64, center_y: f64, center_z: f64, radius: f64, material: material, is_attractor: bool): void{
+        let new_object = new sphere(new vec3(center_x, center_y, center_z), radius, material)
+        this.m_objects.add(new_object);
+        if(is_attractor){
+            this.add_sample_attractor(new_object);
+        }
     }
 
-    add_x_plane(min_y: f64, min_z: f64, max_y: f64, max_z: f64, x: f64, material: material): void{
-        this.m_objects.add(new yz_rect(min_y, max_y, min_z, max_z, x, material));
+    add_x_plane(min_y: f64, min_z: f64, max_y: f64, max_z: f64, x: f64, material: material, is_attractor: bool): void{
+        let new_object = new yz_rect(min_y, max_y, min_z, max_z, x, material)
+        this.m_objects.add(new_object);
+        if(is_attractor){
+            this.add_sample_attractor(new_object);
+        }
     }
 
-    add_y_plane(min_x: f64, min_z: f64, max_x: f64, max_z: f64, y: f64, material: material): void{
-        this.m_objects.add(new xz_rect(min_x, max_x, min_z, max_z, y, material));
+    add_y_plane(min_x: f64, min_z: f64, max_x: f64, max_z: f64, y: f64, material: material, is_attractor: bool): void{
+        let new_object = new xz_rect(min_x, max_x, min_z, max_z, y, material);
+        this.m_objects.add(new_object);
+        if(is_attractor){
+            this.add_sample_attractor(new_object);
+        }
     }
 
-    add_z_plane(min_x: f64, min_y: f64, max_x: f64, max_y: f64, z: f64, material: material): void{
-        this.m_objects.add(new xy_rect(min_x, max_x, min_y, max_y, z, material));
+    add_z_plane(min_x: f64, min_y: f64, max_x: f64, max_y: f64, z: f64, material: material, is_attractor: bool): void{
+        let new_object = new xy_rect(min_x, max_x, min_y, max_y, z, material);
+        this.m_objects.add(new_object);
+        if(is_attractor){
+            this.add_sample_attractor(new_object);
+        }
     }
 
     add_cube(min_x: f64, min_y: f64, min_z: f64,
              max_x: f64, max_y: f64, max_z: f64,
-             material: material): void{
+             material: material, is_attractor: bool): void{
         this.m_objects.add(new box(new vec3(min_x, min_y, min_z), new vec3(max_x, max_y, max_z), material));
     }
 
@@ -313,8 +305,10 @@ export class renderer{
                         for(let i = 0, len = this.m_lights_count; i < len; i++){
                             //create ray to the light
                             let light = unchecked(this.m_lights[i]);
-                            let to_light_ray = new ray(rec.p, subtract(light.get_position(), rec.p));
-                            if(world.hit(to_light_ray, 0.001, 0.999, light_rec)){
+                            let to_light_direction = light.get_to_light(rec.p);
+                            let to_light_ray = new ray(rec.p, to_light_direction);
+                            const to_light_distance = light.get_distance(rec.p);
+                            if(world.hit(to_light_ray, 0.001, to_light_distance, light_rec)){
                                 //the sample in the shadow of the light
                                 //nothing to do
                             }
@@ -335,7 +329,7 @@ export class renderer{
                     }
                     else{
                         let attractor_pdf = new hittable_pdf(this.m_sample_attractor, rec.p);
-                        let p = this.m_sample_attractor.count() > 0 ? new mixture_pdf(attractor_pdf, srec.pdf_ptr) : srec.pdf_ptr;
+                        let p = this.m_sample_attractor.get_count() > 0 ? new mixture_pdf(attractor_pdf, srec.pdf_ptr) : srec.pdf_ptr;
 
                         let scattered = new ray(rec.p, p.generate());
                         const pdf_value = p.value(scattered.direction());

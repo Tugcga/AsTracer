@@ -51,7 +51,7 @@ export abstract class hittable{
         return new vec3(1.0, 0.0, 0.0);
     }
 
-    count(): i32{
+    get_count(): i32{
         return 0;
     }
 

@@ -1,5 +1,6 @@
 node_modules
 tests
+models
 index.js
 render_scenes.js
 /assembly/index.ts

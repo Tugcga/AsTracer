@@ -260,8 +260,8 @@ export class triangle extends hittable {
         else{
             rec.set_face_normal(r, this.face_normal);
         }
-        rec.u = this.u0 + u * this.u1 + v * this.u2;
-        rec.v = this.v0 + u * this.v1 + v * this.v2;
+        rec.u = this.u0 + u * (this.u1 - this.u0) + v * (this.u2 - this.u0);
+        rec.v = this.v0 + u * (this.v1 - this.v0) + v * (this.v2 - this.v0);
         rec.mat_ptr = this.mat_ptr;
         return true;
     }

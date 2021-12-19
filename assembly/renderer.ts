@@ -80,6 +80,10 @@ export class renderer{
         this.m_bake_padding = 0.1;
     }
 
+    get_objects_count(): i32{
+        return this.m_objects.get_count();
+    }
+
     set_bake_padding(value: f64): void{
         this.m_bake_padding = value;
     }
@@ -558,8 +562,8 @@ export function create_noise_2d_texture(color_01: texture, color_02: texture, sc
 }
 
 //gradient texture
-export function create_gradient_texture(color_01: vec3, color_02: vec3): gradient_texture{
-    return new gradient_texture(new solid_color(color_01), new solid_color(color_02));
+export function create_gradient_texture(color_01: texture, color_02: texture): gradient_texture{
+    return new gradient_texture(color_01, color_02);
 }
 
 //uv texture

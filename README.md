@@ -58,6 +58,8 @@ To add the sphere primitive with this material to the scene
 render.add_sphere(0.0, 1.5, 0.0, 1.5, white_mat, false);
 ```
 
+Coordinate system in the scene is the following: X-axis directed to the right, Y-axis directed to the top and the direction of the Z-axis define right coordinate system.
+
 Step 4. Render the image
 
 ```
@@ -121,6 +123,8 @@ Create spatial checker texture. Two input textures used for even and odd squares
 
 Create 2d checker texture. ```squares_u``` and ```squares_v``` are number of squares in [0; 1] of uv-coordinates.
 
+![](images/checker_texture.png)
+
 
 ```create_noise_texture(color_01: texture, color_02: texture, scale_u: f64, scale_v: f64, scale_w: f64): noise_texture```
 
@@ -131,15 +135,21 @@ Create spatial noise texture.
 
 Create 2d noise texture. Parameter ```z_slice``` define the spatial slice of the texture.
 
+![](images/noise_texture.png)
+
 
 ```create_gradient_texture(color_01: vec3, color_02: vec3): gradient_texture```
 
 Create gradient texture. ```color_01``` at the bottom level, ```color_02``` at the top level in the uv-square.
 
+![](images/gradient_texture.png)
+
 
 ```create_uv_texture(): uv_texture```
 
 Create texture, which output uv-coordinates of the object. U-coordinate writes to the r-channel, v-coordinate to the g-channel, b-channel is always zero.
+
+![](images/uv_texture.png)
 
 
 ```create_image_texture(pixels: Uint8Array, width: i32, height: i32): image_texture```
@@ -156,15 +166,19 @@ The same as previous, but encode hdr-texture by float values.
 
 Create simple diffuse material. Albedo should be a texture. For simple clor use solid color texture.
 
+![](images/lambertian_material.png)
+
 
 ```create_metal_material(albedo: texture, roughness: texture): metal```
 
 Create simple metal material. Roughness = 0.0 corresponds to clear reflections, 1.0 to fully blurred reflections.
 
+![](images/metal_material.png)
+
 
 ```create_glass_material(ior: f64): dielectric```
 
-Create simple glass material. The glass is always clear without any absorbtion.
+Create simple glass material. The glass is always clear without any absorption.
 
 
 ```create_emission_material(albedo: texture): diffuse_light```
@@ -261,7 +275,7 @@ Add cube to the scene. The cube span points ```(min_x, min_y, min_z)``` and ```(
 
 ```add_polygonmesh(vertices: Float64Array, normals: Float64Array, uvs: Float64Array, material: material, culling: bool, is_attractor: bool, is_bake: bool, uvs_second: Float64Array): void```
 
-Add triangulated mesh to the scene. ```vertices``` is a plane array of vertex positions. The first three values is the position of the first vertex of the first triangle, the second triple of values define position of the second vertex of the first triangle and so on. After the coordinates of the first triangle the array contains positions of vertices of the second triangle and so on. So, the length of the array is ```9 * triangles_count```. 
+Add triangulated mesh to the scene. ```vertices``` is a plane array of vertex positions. The first three values is the position of the first vertex of the first triangle, the second triple of values define position of the second vertex of the first triangle and so on. After the coordinates of the first triangle the array contains positions of vertices of the second triangle and so on. So, the length of the array is ```9 * triangles_count```. The front face of the triangle defined by counterclock-wise direction of the point sequence.
 
 Array ```normals``` can be empty. In this case each triangle will use local normal (this called flat shading in the Blender). Or you can set specific normal to each vertex of each triangle. In this case the array should be the same length as ```vertices``` array (three coordinates per point, hence nine coordinates per triangle). 
 

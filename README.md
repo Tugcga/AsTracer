@@ -138,7 +138,7 @@ Create 2d noise texture. Parameter ```z_slice``` define the spatial slice of the
 ![](images/noise_texture.png)
 
 
-```create_gradient_texture(color_01: vec3, color_02: vec3): gradient_texture```
+```create_gradient_texture(color_01: texture, color_02: texture): gradient_texture```
 
 Create gradient texture. ```color_01``` at the bottom level, ```color_02``` at the top level in the uv-square.
 
@@ -179,6 +179,8 @@ Create simple metal material. Roughness = 0.0 corresponds to clear reflections, 
 ```create_glass_material(ior: f64): dielectric```
 
 Create simple glass material. The glass is always clear without any absorption.
+
+![](images/glass_material.png)
 
 
 ```create_emission_material(albedo: texture): diffuse_light```

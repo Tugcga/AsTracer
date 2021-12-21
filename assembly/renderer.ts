@@ -389,19 +389,19 @@ export class renderer{
 
     private fire_callback(callback_type: i32, value: i32 = 0): void{
         if(callback_type == CallbackType.start_prepare){
-            //start_prepare();
+            start_prepare();
         }
         else if(callback_type == CallbackType.finish_prepare){
-            //finish_prepare();
+            finish_prepare();
         }
         else if(callback_type == CallbackType.start_render){
-            //start_render();
+            start_render();
         }
         else if(callback_type == CallbackType.finish_render){
-            //finish_render();
+            finish_render();
         }
         else if(callback_type == CallbackType.render_process){
-            //render_process(value, this.m_render_buffer.slice(value * this.m_image_width * 3, (value + 1) * this.m_image_width * 3));
+            render_process(value, this.m_render_buffer.slice(value * this.m_image_width * 3, (value + 1) * this.m_image_width * 3));
         }
         else{
             //unknown callback, ignore it

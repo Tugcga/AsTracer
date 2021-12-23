@@ -17,6 +17,19 @@ So, the example of the build command is the following:
 asc assembly/renderer.ts assembly/aarect.ts assembly/box.ts assembly/camera.ts assembly/color.ts assembly/light.ts assembly/material.ts assembly/sphere.ts assembly/texture.ts assembly/utilities.ts assembly/vec3.ts -o build/renderer.wasm --exportRuntime -Ospeed --noAssert --optimizeLevel 3
 ```
 
+## Example
+
+An example of PlayCanvas based application with integrated renderer is [here](https://playcanvas.com/project/862903/overview/astracer-demo). The application is very simple. You can rotate camera and spawn colored cubes. When click "Render" button, the rendering process is started in the parallel task by using Web Worker. You can tweak the following quality parameters:
+* sampling
+* depth
+* downsampling (increase or decrease the output image size, 0 means actual size, 1 - half size, -1 - double size and so on)
+
+<p float="left">
+  <img src="images/preview_01.png" width="500" />
+  <img src="images/render_01.png" width="500" />
+</p>
+
+
 ## How to use
 
 Step 0. Import wasm module into your environment as usual. You can use standard AssemblyScript [loader](https://www.assemblyscript.org/loader.html) for Node.js or browser, or use may be something more specific. For example [pyaswasm](https://github.com/Tugcga/pyaswasm) for Python with [Wasmer](https://github.com/wasmerio/wasmer-python) backend. For importing you should define five external functions

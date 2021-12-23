@@ -25,8 +25,8 @@ An example of PlayCanvas based application with integrated renderer is [here](ht
 * downsampling (increase or decrease the output image size, 0 means actual size, 1 - half size, -1 - double size and so on)
 
 <p float="left">
-  <img src="images/preview_01.png" width="500" />
-  <img src="images/render_01.png" width="500" />
+  <img src="images/preview_01.png" width="400" />
+  <img src="images/render_01.png" width="400" />
 </p>
 
 

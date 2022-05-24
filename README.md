@@ -1,6 +1,6 @@
 ## What is it
 
-This is another basic raytracer, written in [AssemblyScript](https://www.assemblyscript.org/) ad compiled into [WebAssembly](https://webassembly.org/) module. Raytracer is based on [Ray Tracing in One Weekend](https://raytracing.github.io/) book series. It contains the following additional features:
+This is another basic raytracer, written in [AssemblyScript](https://www.assemblyscript.org/) and compiled into [WebAssembly](https://webassembly.org/) module. Raytracer is based on [Ray Tracing in One Weekend](https://raytracing.github.io/) book series. It contains the following additional features:
 * Render triangulated polygon meshes
 * Distance light and point light sources
 * Allows not only to render the image, but also to bake lightmaps. It can bake full lightmaps or indirect lighting only.
@@ -322,7 +322,7 @@ The renderer is quite slow. At least with respect to productions ready renderer 
 * WebAssembly works slowly with respect to native code. The speed also depends on host environment. Wasmtime, for example, slowly than Node.js.
 * AssemblyScript applications are single-threaded. There are some low-level multi-thread functions, but I can not understand how to use it.
 * Renderer is based on the tutorial. Serious renderers use more advanced algorithms, and hence works faster.
-* Out implementation written in OOP style. During rendering process it creates and destroy many temporary objects. This also leads to the low speed.
+* Our implementation written in OOP style. During rendering process it creates and destroy many temporary objects. This also leads to the low speed.
 
 For testing we use two different scenes with corner box. The first corner box contains environment light and one directional light. The other corner box contains rectangular mesh light. We render these scenes in Cycles and in out renderer. In Cycles we use only one core for rendering. Result images and render times are in tables. As a result, the renderer is x10 times slowly at the first scene and x7 times slowly at the second. At the first scene the results are close, but at the second our renderer produce more noisy result with the same count of samples.
 
